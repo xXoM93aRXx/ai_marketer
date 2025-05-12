@@ -1,3 +1,4 @@
+// app/dashboard/page.js
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/db/client";
@@ -19,39 +20,22 @@ export default async function DashboardPage() {
   if (!user) redirect("/auth/signin");
 
   return (
-    <div style={{ padding: 40 }}>
-      <h1>Welcome, {user.email}</h1>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-xl">
+        <h1 className="text-2xl font-bold text-gray-800 mb-6">
+          Welcome, {user.email}
+        </h1>
 
-      <div
-        style={{
-          marginTop: 30,
-          border: "1px solid #ccc",
-          padding: 20,
-          borderRadius: 8,
-          maxWidth: 600,
-          background: "#f9f9f9",
-        }}
-      >
-        <h2>Your API Key</h2>
-        <div
-          style={{
-            marginTop: 10,
-            padding: "10px",
-            background: "#eee",
-            fontFamily: "monospace",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            wordBreak: "break-all",
-          }}
-        >
-          <span>{user.apiKey}</span>
-          <CopyButton text={user.apiKey} />
-          
+        <div className="mb-6">
+          <h2 className="text-lg font-semibold mb-2">Your API Key</h2>
+          <div className="flex items-center justify-between p-3 bg-gray-200 rounded-lg">
+            <span className="font-mono break-all">{user.apiKey}</span>
+            <CopyButton text={user.apiKey} />
+          </div>
         </div>
-        
+
+        <LogoutButton />
       </div>
-      <LogoutButton/>
     </div>
   );
 }
