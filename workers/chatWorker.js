@@ -9,30 +9,32 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const worker = new Worker(
   "chatQueue",
   async (job) => {
-    console.log(`🟡 [Job ${job.id}] Started: "${job.data.prompt}"`);
+    console.log(`🟡 [Job ${job.id}] Processing: "${job.data.prompt}"`);
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [{ role: "user", content: job.data.prompt }],
-    });
+    try {
+      const response = await openai.chat.completions.create({
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "user", content: job.data.prompt }],
+      });
 
-    const reply = response.choices[0].message.content;
-    console.log(`✅ [Job ${job.id}] Completed`);
-    return reply;
+      const result = response.choices[0].message.content;
+      console.log(`✅ [Job ${job.id}] Completed: ${result}`);
+      return result;
+    } catch (err) {
+      console.error(`❌ [Job ${job.id}] Failed: ${err.message}`);
+      throw new Error(`OpenAI API error: ${err.message}`);
+    }
   },
-  {
-    connection: redis,
-  }
+  { connection: redis }
 );
 
-// ✅ Log success
-worker.on("completed", (job) => {
-  console.log(`🎉 [Job ${job.id}] Result sent`);
+// Worker Status Log
+worker.on("completed", (job, returnvalue) => {
+  console.log(`🎉 [Job ${job.id}] Success: ${returnvalue}`);
 });
 
-// ❌ Log failure
 worker.on("failed", (job, err) => {
-  console.error(`❌ [Job ${job?.id}] Failed:`, err);
+  console.error(`❌ [Job ${job?.id}] Error: ${err.message}`);
 });
 
 redis.ping().then(() => {
