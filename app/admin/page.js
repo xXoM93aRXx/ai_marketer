@@ -4,7 +4,7 @@ import { db } from "@/db/client";
 import { users } from "@/db/schema";
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
-import AdminClient from "./adminClient";
+import AdminClient from "./AdminClient";
 
 export default async function AdminPage() {
   const session = await getServerSession(authOptions);
