@@ -6,6 +6,8 @@ import LogoutButton from "@/components/LogoutButton";
 
 export default function DashboardClient({ user }) {
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const [targetAudience, setTargetAudience] = useState(user.targetAudience || '');
   const [goal, setGoal] = useState(user.goal || '');
   const [tone, setTone] = useState(user.tone || '');
@@ -19,6 +21,7 @@ export default function DashboardClient({ user }) {
 
   async function handleUpdatePreferences(e) {
     e.preventDefault();
+    setLoading(true);
     try {
       const res = await fetch('/api/user/update', {
         method: 'POST',
@@ -31,16 +34,19 @@ export default function DashboardClient({ user }) {
 
       if (res.ok) {
         setMessage("✅ Preferences updated successfully!");
+        setTimeout(() => setMessage(""), 2000); // Auto-disappear after 2 seconds
       } else {
         setMessage("❌ Failed to update preferences.");
       }
     } catch (err) {
       setMessage(`❌ Error: ${err.message}`);
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="relative flex items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-xl">
         <h1 className="text-2xl font-bold text-gray-800 mb-6">
           Welcome, {user.email}
@@ -101,15 +107,29 @@ export default function DashboardClient({ user }) {
             </div>
             <button
               type="submit"
-              className="w-full bg-blue-500 text-white py-2 mt-2 rounded-md"
+              disabled={loading}
+              className={`w-full py-2 mt-2 rounded-md text-white ${
+                loading ? 'bg-blue-400' : 'bg-blue-500 hover:bg-blue-600'
+              } transition duration-200`}
             >
-              Update Preferences
+              {loading ? (
+                <div className="flex items-center justify-center space-x-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>Updating...</span>
+                </div>
+              ) : (
+                "Update Preferences"
+              )}
             </button>
           </form>
         </div>
 
-        {message && <p className="text-green-600">{message}</p>}
+        {/* Success/Failure Message */}
+        {message && (
+          <p className="mt-4 text-center text-green-600">{message}</p>
+        )}
 
+        {/* Subscription Details */}
         <div className="mb-6">
           <h2 className="text-lg font-semibold">Subscription Details</h2>
           <p>Start: {subscriptionStart}</p>
