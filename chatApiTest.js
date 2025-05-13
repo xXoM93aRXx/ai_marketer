@@ -3,7 +3,7 @@ const prompt = "Create a linkedIn post about";
 
 async function testChatApi() {
   try {
-    const res = await fetch("https://ai-marketer-575kodnn8-xxom93arxxs-projects.vercel.app/api/chat", {
+    const res = await fetch("http://localhost:3000/api/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

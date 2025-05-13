@@ -14,6 +14,7 @@ export async function POST(req) {
       return NextResponse.json({ error: "Missing API key or prompt" }, { status: 400 });
     }
 
+    // ✅ Fetch user and validate API key
     const [user] = await db.select().from(users).where(eq(users.apiKey, apiKey));
 
     if (!user) {
@@ -24,7 +25,7 @@ export async function POST(req) {
       return NextResponse.json({ error: "API key is inactive" }, { status: 403 });
     }
 
-    // Check subscription validity
+    // ✅ Check subscription validity
     const currentDate = dayjs();
     const subscriptionEnd = user.subscriptionEnd ? dayjs(user.subscriptionEnd) : null;
 
@@ -32,8 +33,29 @@ export async function POST(req) {
       return NextResponse.json({ error: "Subscription has expired." }, { status: 403 });
     }
 
-    // Add the job to the queue if valid
-    const job = await chatQueue.add("chat", { prompt });
+    // ✅ Construct the prompt using user preferences
+    let enhancedPrompt = prompt;
+
+    if (user.targetAudience) {
+      enhancedPrompt += `\nTarget Audience: ${user.targetAudience}.`;
+    }
+
+    if (user.goal) {
+      enhancedPrompt += `\nGoal: ${user.goal}.`;
+    }
+
+    if (user.tone) {
+      enhancedPrompt += `\nTone of Voice: ${user.tone}.`;
+    }
+
+    if (user.ageGroup) {
+      enhancedPrompt += `\nAge Group: ${user.ageGroup}.`;
+    }
+
+    console.log(`Enhanced Prompt: ${enhancedPrompt}`);
+
+    // ✅ Add the job to the queue if valid
+    const job = await chatQueue.add("chat", { prompt: enhancedPrompt });
     const result = await job.waitUntilFinished(chatQueueEvents);
 
     const response = NextResponse.json({ response: result });
@@ -42,6 +64,7 @@ export async function POST(req) {
     response.headers.set("Access-Control-Allow-Headers", "Content-Type, x-api-key");
     return response;
   } catch (err) {
+    console.error(`❌ Job processing failed: ${err.message}`);
     return NextResponse.json({ error: `Job processing failed: ${err.message}` }, { status: 500 });
   }
 }
