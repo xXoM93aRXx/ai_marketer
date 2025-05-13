@@ -4,6 +4,7 @@ const { pgTable, text, boolean, timestamp, uuid } = require('drizzle-orm/pg-core
 const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
   email: text('email').notNull().unique(),
+  name: text('name'),
   password: text('password'),
   apiKey: text('api_key').notNull().unique(),
   verificationToken: text('verification_token'),

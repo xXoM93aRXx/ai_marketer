@@ -8,6 +8,7 @@ const { sendPasswordSetupEmail } = require('@/lib/email');
 export async function POST(req) {
   const formData = await req.formData();
   const email = formData.get("email");
+  const name = formData.get("name");
 
   const existing = await db.select().from(users).where(eq(users.email, email));
   if (existing.length) {
@@ -17,6 +18,7 @@ export async function POST(req) {
   const token = crypto.randomBytes(32).toString("hex");
 
   await db.insert(users).values({
+    name,
     email,
     apiKey: crypto.randomBytes(32).toString("hex"),
     role: "user",

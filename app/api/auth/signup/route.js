@@ -12,7 +12,7 @@ function generateApiKey() {
 }
 
 export async function POST(req) {
-  const { email, password } = await req.json();
+  const { email, name, password } = await req.json();
 
   const existing = await db.select().from(users).where(eq(users.email, email));
   if (existing.length) {
@@ -24,6 +24,7 @@ export async function POST(req) {
   const token = crypto.randomBytes(32).toString("hex");
 
   await db.insert(users).values({
+    name,
     email,
     password: hashedPassword,
     apiKey,

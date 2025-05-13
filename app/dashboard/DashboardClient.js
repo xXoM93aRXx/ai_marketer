@@ -49,7 +49,7 @@ export default function DashboardClient({ user }) {
     <div className="relative flex items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-xl">
         <h1 className="text-2xl font-bold text-gray-800 mb-6">
-          Welcome, {user.email}
+          Welcome, {user.name}
         </h1>
 
         {/* API Key Display */}

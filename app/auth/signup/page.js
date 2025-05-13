@@ -7,7 +7,7 @@ import Image from 'next/image';
 
 export default function SignUpPage() {
   const router = useRouter();
-  const [form, setForm] = useState({ email: '', password: '' });
+  const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false); // Loading state
 
@@ -46,6 +46,14 @@ export default function SignUpPage() {
           <p className="text-red-500 text-center mb-4">{error}</p>
         )}
         <form onSubmit={handleSubmit} className="space-y-4">
+           <input
+            type="text"
+            placeholder="Name"
+            value={form.name}
+            onChange={e => setForm({ ...form, name: e.target.value })}
+            required
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
           <input
             type="email"
             placeholder="Email"
