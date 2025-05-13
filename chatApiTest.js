@@ -1,9 +1,9 @@
-const apiKey = "ebf8336be4ce236aa189dfae7c499dc64e5d913c5ce791793c771dbd09715960";
+const apiKey = "e24c8f1d003fd86491918ea7ba6372ae98485689cf51fbbe629af66d09ca3603";
 const prompt = "Create a linkedIn post about";
 
 async function testChatApi() {
   try {
-    const res = await fetch("http://localhost:3000/api/chat", {
+    const res = await fetch("https://ai-marketer-575kodnn8-xxom93arxxs-projects.vercel.app/api/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
