@@ -4,7 +4,7 @@ import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
 export async function GET(req, context) {
-  const token = context.params.token; // ✅ access token like this
+   const { token } = await context.params; // ✅ access token like this
 
   if (!token) {
     return NextResponse.json({ error: "Missing token" }, { status: 400 });

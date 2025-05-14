@@ -5,6 +5,7 @@ import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
+import dayjs from "dayjs";
 const { sendConfirmationEmail } = require('@/lib/email');
 
 function generateApiKey() {
@@ -19,6 +20,8 @@ export async function POST(req) {
     return new Response("User already exists", { status: 409 });
   }
 
+  const subscriptionEnd = dayjs().add(14, 'day').toDate();
+
   const hashedPassword = await bcrypt.hash(password, 10);
   const apiKey = generateApiKey();
   const token = crypto.randomBytes(32).toString("hex");
@@ -30,6 +33,7 @@ export async function POST(req) {
     apiKey,
     isActive: false,
     verificationToken: token,
+    subscriptionEnd
   });
 
   await sendConfirmationEmail({
